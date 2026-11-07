@@ -43,7 +43,7 @@ On the first period it looked great: +8.3% a trade against −1.3% without the f
 
 Breaking it down showed something I didn't expect. Copying wallets with positive profit of their own gave −9.2, −8.5, −6.7, +2.1 and −2.7% across the five configurations. Copying everyone gave −2.9, +3.8, +2.8, +2.3 and −0.5%. The profitable wallets were worse to copy.
 
-It makes sense once you see it. A wallet's own profit comes from its entry price, and the copier doesn't get that price. What helps a copier is other buying coming in after them. The wallets I was filtering out, the ones that keep buying their own coin, are exactly the ones that bring that. This is a scam strategy that artificially pumps their token so that it attracts more users, and then they dump on them.
+It makes sense once you see it. A wallet's own profit comes from its entry price, and the copier doesn't get that price. What helps a copier is other buying coming in after them. The wallets I was filtering out, the ones that keep buying their own coin, are exactly the ones that bring that. It's a pump: the wallet buys its own coin to draw followers in, then sells into them.
 
 ## The one that paid
 
@@ -55,7 +55,7 @@ Then it stopped. On chain I could see it had emptied itself into a new address. 
 
 I should say how it ended, because "the one that paid" is only true of those trades. The bot's wallet peaked at 0.62 SOL on 1 October, from 0.381 deposited, and was at 0.13 when I stopped it on 5 October. One day in between lost 0.46 SOL over 239 trades. Over the whole run the trades netted +0.054 SOL across 1,392 round trips. Most of the final loss was 836 tiny test buys I'd sent to measure how fast my orders were landing (−0.230 SOL).
 
-My theory is that he realized he was bleeding from my buys, so he stopped, sent his funds to a CEX, making it very difficult to track his new address. And this is not scaleable as these traders will eventually catch my wallet and either stop or use it to their advantage to sell into my buys, causing me a loss. Another thing regarding why it was difficult to find more traders like him to use to my advantage is that "smarter" traders use different wallets to artificially pump their coins, making it almost impossible to filter it out. Though one thing worth testing is using bubblemaps and series of optimizing the speed and detection of my model to catch more traders like the one I profited from before they stopped...
+Why he stopped I can only guess. My guess is that he noticed my buys landing right behind his first one, saw they were costing him, and moved his funds out through an exchange, which breaks the trail on chain. Either way it doesn't scale. An operator like this can spot a follower's wallet and stop, or start selling into it. Finding more of them is hard too, because the careful ones spread the pumping across many wallets. The one thing I'd still test is clustering wallets by funding source and by fingerprint (the same fee, tip and direct program call that gave this one away) fast enough to find the next operator while he's still active.
 
 ## Same thing on Polymarket
 
@@ -63,4 +63,4 @@ I had the full Polymarket history (404.5M fills, 1.96M wallets), so I tried the 
 
 ## What I took from it
 
-In almost every case, speed wins the race, and some of them I am unable to beat even with the highest quality services that provide latency edge because they bundle wallets. Making it impossible for snipers to buy before the block, and by the time users like me buy, its already too late.
+In every version, the winners' edge was their position: they created the coin, were in its bundle, or were first in the block. A follower one block later gets none of that, and paying for the fastest services I could find didn't change it, because bundled buys land in the same block as the launch. The one time following paid, it was by accident: I was ahead of one operator's own pump.

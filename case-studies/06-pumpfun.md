@@ -59,4 +59,4 @@ And the return shape makes waiting expensive. Most trades lose a little and a fe
 
 ## Conclusion
 
-The people that benefit are insiders, who use fresh wallets, and that isnt something we can detect or filter programmatiically or mathematically. Either that or the very lucky few buyers who are in the 99.99th percentile. More than likely, I would have been drained copying all the non profitable wallets to find the few that successfully buy. 
+What pays on pump.fun is position, not prediction. The winners are creators with a bundle behind them, wallets that are first in the block, and operators who use a fresh wallet for every launch, and nothing I could compute from public data got me into any of those seats. The only other winners are the few buyers who happen to hold one of the rare coins that runs, and copying wallets to find them means paying for all the ones that don't.

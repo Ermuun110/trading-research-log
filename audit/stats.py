@@ -85,6 +85,59 @@ def max_drawdown(period_returns: Sequence[float]) -> float:
     return worst
 
 
+def sharpe_se(period_returns: Sequence[float], periods_per_year: float = 365.0) -> float:
+    """Standard error of the annualised Sharpe ratio for i.i.d. returns (Lo 2002).
+
+    se = sqrt((1 + SR^2 / 2) / n) per period, scaled like the Sharpe ratio. A Sharpe of 5 on
+    242 days has a standard error of about 1.25, so its 95% range is roughly 2.6 to 7.5.
+    """
+    n = len(period_returns)
+    sr = fmean(period_returns) / stdev(period_returns)
+    return math.sqrt((1.0 + 0.5 * sr * sr) / n) * math.sqrt(periods_per_year)
+
+
+def newey_west_tstat(values: Sequence[float], lags: int = 5) -> float:
+    """t-statistic of the mean with a Newey-West (Bartlett kernel) long-run variance.
+
+    Use it when consecutive periods are correlated, for example holds that overlap. When it
+    is close to `tstat`, autocorrelation is not inflating the result.
+    """
+    n = len(values)
+    if lags < 0 or n <= lags + 1:
+        raise ValueError("need lags >= 0 and more than lags + 1 observations")
+    m = fmean(values)
+    d = [v - m for v in values]
+    lrv = sum(x * x for x in d) / n
+    for lag in range(1, lags + 1):
+        weight = 1.0 - lag / (lags + 1.0)
+        lrv += 2.0 * weight * sum(d[i] * d[i - lag] for i in range(lag, n)) / n
+    if lrv <= 0:
+        return math.copysign(math.inf, m) if m else 0.0
+    return m / math.sqrt(lrv / n)
+
+
+def kelly_leverage(period_returns: Sequence[float]) -> float:
+    """Growth-optimal leverage, mean / variance of the per-period return.
+
+    Expected log growth is roughly f * mean - f^2 * var / 2 at leverage f, so it turns
+    negative above twice this number even when the mean is positive.
+    """
+    return fmean(period_returns) / stdev(period_returns) ** 2
+
+
+def compound(period_returns: Sequence[float], leverage: float = 1.0) -> list[float]:
+    """Equity after each period, starting from 1, rebalanced to `leverage` every period.
+
+    The additive sums used elsewhere in this module hide volatility drag and ruin. Equity
+    is floored at 0: one period that loses 1 / leverage or more ends the path.
+    """
+    equity, path = 1.0, []
+    for r in period_returns:
+        equity = max(equity * (1.0 + leverage * r), 0.0)
+        path.append(equity)
+    return path
+
+
 # ----------------------------------------------------------------- multiple testing
 
 def false_pass_rate(t_bar: float) -> float:

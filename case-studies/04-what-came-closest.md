@@ -10,7 +10,7 @@ A note on units: for the perp strategies, returns are per day on one side of the
 | Same model on all top-250 perps | +176 bp a day, t 4.43, 9 of 10 months positive | Two separate periods | All the edge is in the meme coins, so same problem |
 | 60-minute reversal | +22.4 bp a trade after costs, 110 trades a day, day-clustered t of 3.04 | A holdout I hadn't touched, a shuffle placebo, capping every trade at ±20%, entering late | +6.2 bp on 2023-25 when I'd set the bar at +30 |
 | Same signal, 24h hold, hedged with BTC | +51.5 bp a trade, t 5.38, positive in 2023, 2024 and 2025 | Three separate years | I found it by looking around, so it wasn't pre-registered. About $14 a day on $4k |
-| Buy perps after a sharp 15-minute drop | +1.34 / +1.04 / +1.19% a trade over three periods | Three periods, entering 1 to 2 minutes late, costs of 0.40% | The 4-hour version works on 2020-22 and fades after. Live paper is negative. One crash day lost 368 points in the backtest |
+| Buy perps after a sharp 15-minute drop | +1.34 / +1.04 / +1.19% a trade over three periods (t 3.7 / 1.3 / 3.3) | Three periods, entering 1 to 2 minutes late, costs of 0.40% | The 4-hour version works on 2020-22 and fades after. Live paper is negative. One crash day lost 368 points in the backtest |
 | Short a delisted coin on another exchange | +22.2% per event, t 4.33, 81% win rate | Positive in 2024, 2025 and 2026 with real funding costs | Only 47 events in under three years, and one was a total loss |
 | Sell the cheap side on Kalshi 15-minute markets | +0.80 cents a contract, 20 of 22 days positive | 3.23M trades, both halves of the sample | That's what other people's orders earned. Paper test of my own fills is still running |
 | Same idea on Kalshi sports markets | +1.43 and +2.02 cents a contract in the two halves, t 3.98 and 7.77 | Pre-registered, 763 events, 4.72M trades, ten series | Same caveat. Paper test running |
@@ -78,6 +78,22 @@ Even within the year I'd built it on, the money comes late. September 2025 to Ja
 
 While doing this I also found my funding data was missing 62.8% of its values for the original year. With complete data the frozen model makes +141 bp a day there, not +200.
 
+### What it would have done to an account
+
+The table adds up daily returns per unit of one side's notional. A real account compounds and runs on leverage, and that changes the picture. At the size I'd planned ($4,000 at 4x, so each side is twice the equity), rebalanced daily:
+
+| Start | Lowest equity | End (Aug 2026) |
+|---|---|---|
+| Apr 2023 | 0.12% of the start | 0.58x |
+| Sep 2025 (the year I built it on) | 19.7% | 96x |
+| Jan 2026 | 88% | 429x |
+
+From April 2023 the account goes to almost nothing, although the average day over the whole sample is positive (+13.7 bp). That's volatility drag. The growth-optimal leverage on the full sample is 0.84x per side, and compounded growth turns negative above about twice that, even with a positive mean. My 2x was past that line. Even starting in September 2025, the best stretch, the account falls 80% before it makes money. The worst day (10 October 2025) was −16.1% of one side, which at my leverage is −32% of the account in a day.
+
+The last column is a warning too. Nothing compounds 429x in eight months at real size, so if this edge is real, its capacity is small.
+
+Two checks on the 2026 number. The Sharpe of 5.05 has a standard error of about 1.25 (Lo 2002), so the 95% range is roughly 2.6 to 7.5: high, but from 242 days. And the daily returns are barely autocorrelated (lag-1 correlation 0.03): a Newey–West t with 5 lags is 3.81 against the plain 4.11, so overlapping holds aren't inflating it. `python research/era_metrics.py` prints all of this from the CSV.
+
 Nearly all the profit is on the short side, and 2025-26 was a bad year for meme perps. So what I have is a bet that meme perps keep behaving the way they did in 2026. It might keep working. I can't tell from this data.
 
 I ran it on paper for twelve days (+153 bp a day, t 1.69) and then shut down the server it was on to save money. Twelve days doesn't tell me anything either way.
@@ -88,7 +104,7 @@ Two reasons, and I only think one of them was a good one.
 
 The good reason is the evidence. Three of the perp strategies only work in one period. The one version that's positive every year is something I spotted while looking at other results, which is the kind of finding I've learned not to trust until it's tested properly.
 
-The bad reason is size. In their good years these make about $15 to $35 a day on $4,000. I'd set out to make a few hundred a day, so I kept moving on to the next thing. I think that was the wrong call. If something small holds up every year, you can scale it with more capital or leverage. A memecoin trade that works at a few dollars a time stays that size forever.
+The bad reason is size. Apart from the meme perp model (about $130 a day in 2026 at $8,000 a side), these make about $15 to $35 a day on $4,000 in their good years. I was looking for edges that were large in dollars at my account size, so I kept moving on to the next thing. I think that was the wrong call. If something small holds up every year, you can scale it with more capital or leverage. A memecoin trade that works at a few dollars a time stays that size forever.
 
 If I picked this up again, the first thing I'd do is pre-register the 24-hour hedged reversal and run it forward.
 

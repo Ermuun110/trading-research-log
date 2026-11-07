@@ -9,6 +9,8 @@ Eight of them were still positive after costs once I'd tested them properly (hel
   <img src="docs/img/scoreboard-light.svg" alt="71 strategy families tested, 115 pre-registrations, 8 positive after costs, 3 real-money pilots all stopped at a small net loss" width="880">
 </picture>
 
+If you only read three things: [case study 1](case-studies/01-selection-lookahead.md) (a lookahead bug I found while real money was on it), [GUARDRAILS.md](GUARDRAILS.md) (the six ways my backtests fooled me, and the checks), and [case study 4](case-studies/04-what-came-closest.md) (the best result, and why I still don't trust it).
+
 I'm a final-year Industrial Engineering and Decision Analytics student at HKUST. The ideas and the decisions here are mine. I used Claude Code to write the code and run the backtests ([more on that below](#how-i-used-ai)). None of this is investment advice.
 
 ## Why most of them failed
@@ -21,15 +23,15 @@ That return shape is what makes it easy to fool yourself. A rule can average wel
 
 ## What came out positive
 
-Every number here is after fees, funding and slippage.
+Every number here is after fees, funding and slippage. With 115 pre-registered tests and a pass mark around t = 2, about 2.6 would pass by luck alone, so a pass here only earned an idea another test, not money.
 
 | Idea | Result | How it was tested | Where it stands |
 |---|---|---|---|
-| Long/short model on meme perps, 24h hold | +229 bp a day, t 4.09 | Frozen model on a second period. Costs checked on 84 live order books, 125 paper fills checked against real trades | Retrained monthly it makes +160 bp a day in 2026 (Sharpe 5.0) and loses 20.6 bp a day over 2023-25. Parked until I know if that's a regime |
+| Long/short model on meme perps, 24h hold | +229 bp a day, t 4.09 | Frozen model on a second period. Costs checked on 84 live order books, 125 paper fills checked against real trades | Retrained monthly it makes +160 bp a day in 2026 (Sharpe 5.0) and loses 20.6 bp a day over 2023-25. At the 4x I'd planned, 2023-25 takes the account to 0.12% of its start. Parked until I know if 2026 is a regime |
 | Same model on all top-250 perps | +176 bp a day, t 4.43, 9 of 10 months positive | A second period it hadn't seen | All the edge is in the meme coins, so the same question |
 | 60-minute reversal across the top 250 perps | +22.4 bp a trade, 110 trades a day, day-clustered t 3.04 | A holdout I hadn't touched, a shuffle placebo, entering late | +6.2 bp on 2023-25. I'd set the bar at +30 |
 | Same signal held 24 hours, hedged with BTC | +51.5 bp a trade, t 5.38 | Positive in 2023, 2024 and 2025 separately | Not pre-registered yet. About $14 a day on $4k |
-| Buy perps after a sharp 15-minute drop | +1.34 / +1.04 / +1.19% a trade | Three separate periods, with the rule picked on the first one only | The 4-hour version works on 2020-22 and fades after. Live paper is slightly negative after 66 trades |
+| Buy perps after a sharp 15-minute drop | +1.34 / +1.04 / +1.19% a trade, t 3.7 / 1.3 / 3.3 | Three separate periods, with the rule picked on the first one only. The second period on its own isn't significant | The 4-hour version works on 2020-22 and fades after. Live paper is slightly negative after 66 trades |
 | Short a coin on Bybit after Binance announces a delisting | +22.2% per event, t 4.33, 81% win rate | 47 events, positive in 2024, 2025 and 2026, real funding costs | It's rare, and one of the 47 was a total loss |
 | Sell the 5-cent side on Kalshi 15-minute crypto markets | +0.80 cents a contract, 20 of 22 days positive | 5,060 real trades, both halves of the sample | That's what other people's resting orders earned. A paper test of my own fills is running |
 | Same idea on Kalshi sports markets | +1.43 and +2.02 cents a contract in the two halves (t 3.98 and 7.77) | Pre-registered, 763 events, 4.72M trades, ten series | Same caveat. Paper test running |
@@ -41,7 +43,11 @@ Every number here is after fees, funding and slippage.
 
 The chart is the first row, retrained every month and only scored on months it hadn't seen. The daily numbers are in [`data/`](data) and `python research/era_metrics.py` recomputes the table in [case study 4](case-studies/04-what-came-closest.md) from them, so you don't have to take my word for it.
 
-Why I haven't traded them: I was aiming for a few hundred dollars a day from $4,000, and these came out at $14 to $35 a day, so I kept moving on. I now think that was the wrong call. A small edge that holds up every year is the one worth having, because it can take more capital. The 24-hour hedged reversal is the one I'd pre-register and run forward next.
+Two of these are known effects. Selling the cheap side on Kalshi is the favourite–longshot bias: cheap contracts are overpriced (Griffith 1949; Snowberg and Wolfers 2010). The 60-minute reversal is short-term reversal, usually read as the return to providing liquidity (Lehmann 1990; Jegadeesh 1990; Nagel 2012). What I can't say yet is why either is still there after costs in these markets.
+
+None of them has a capacity estimate. The perp costs were checked at $800 a coin on live order books, and I haven't measured how much size they take before costs eat the edge.
+
+Why I haven't traded them: I was screening for edges that would be large in dollars on a $4,000 account. Apart from the meme perp model (about $130 a day in 2026 at $8,000 a side, and the one that would have wiped out the account before that), these came out at $14 to $35 a day, so I kept moving on. That was the wrong filter. What matters is return per unit of risk and whether it holds every year, because a small edge that holds up can take more capital. The 24-hour hedged reversal is the one I'd pre-register and run forward next.
 
 ## False positives I caught
 
@@ -102,22 +108,31 @@ The Solana totals come from what went in and out of the wallets on chain. An ear
 
 ## How I used AI
 
-The direction was mine: which markets to look at, which ideas to test, what result would be good enough, and every decision about real money. Claude Code did the programming. It wrote the code in this repo and ran the backtests.
+The ideas, the test designs, the pass marks and every decision about real money were mine. Claude Code wrote the code and ran the backtests. An agent can produce a good-looking backtest in minutes, so most of my time went into trying to break results: 115 pre-registered tests, held-back data, and paper fills checked against real ones. [AGENT-WORKFLOW.md](AGENT-WORKFLOW.md) has the setup, including what the agent can't do without me.
 
-An agent can produce a backtest in a couple of minutes, which makes it easy to end up with one that only looks good. So most of my own time went into checking results. Before each test the rule and the pass mark were written to a file (there are 115 of those), part of the data was held back, and paper fills were compared with real ones.
-
-For the early files, the file and the result were committed together, so you'd have to take my word on the order. From late September the file was committed first, and git shows that for at least 16 of them. Examples are in [`prereg/`](prereg), and [AGENT-WORKFLOW.md](AGENT-WORKFLOW.md) has the setup, including what the agent can't do without me.
+On the pre-registrations: the early files were committed together with their results, so for those the order rests on my word. From late September each file was committed before its test ran. That history is in the private repo (at least 16 files), and [`prereg/`](prereg) lists the commit hashes and times for three of them.
 
 ## What's in here
 
 - [`case-studies/`](case-studies): seven write-ups with the numbers.
 - [`GRAVEYARD.md`](GRAVEYARD.md): a table of what I tested and how each one ended.
-- [`audit/`](audit), [`evals/`](evals), [`tests/`](tests): the runnable part. Standard library only, 43 tests.
+- [`audit/`](audit), [`evals/`](evals), [`tests/`](tests): the runnable part. Standard library only, 51 tests.
 - [`prereg/`](prereg): four pre-registration files as they were committed, plus the template.
 - [`src/`](src): a few files from the private repo. Two are paper traders that run on public market data.
 - [`data/`](data), [`research/`](research): one daily return series and a few analysis scripts.
 
 The raw data isn't here (tens of GB, mostly third-party), and neither is the full changelog, which has server details I haven't cleaned out.
+
+## References
+
+The known results these findings line up with, and the methods behind the checks.
+
+- Favourite–longshot bias: Griffith (1949), *American Journal of Psychology*; Snowberg and Wolfers (2010), "Explaining the favorite–long shot bias", *Journal of Political Economy*.
+- Short-term reversal: Lehmann (1990), "Fads, martingales, and market efficiency", *QJE*; Jegadeesh (1990), *Journal of Finance*; Nagel (2012), "Evaporating liquidity", *Review of Financial Studies*.
+- Crypto cross-section: Liu, Tsyvinski and Wu (2022), "Common risk factors in cryptocurrency", *Journal of Finance*.
+- Data snooping and multiple testing: White (2000), "A reality check for data snooping", *Econometrica*; Harvey, Liu and Zhu (2016), "…and the cross-section of expected returns", *Review of Financial Studies*; Bailey and López de Prado (2014), "The deflated Sharpe ratio", *Journal of Portfolio Management*.
+- Standard errors: Newey and West (1987), *Econometrica*; Petersen (2009), "Estimating standard errors in finance panel data sets", *Review of Financial Studies*; Lo (2002), "The statistics of Sharpe ratios", *Financial Analysts Journal*.
+- Sizing: Kelly (1956), "A new interpretation of information rate", *Bell System Technical Journal*.
 
 ## Contact
 

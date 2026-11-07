@@ -20,7 +20,7 @@ Now, for anything that selects wallets, coins or markets, I ask whether it could
 
 For one wallet-copy idea we ran a grid of 4,752 settings and took the best five. All five passed a second period at +3 to +9% a trade, which looked like confirmation. On the first data none of them had seen, the main one made −8.0% over 97 trades. The same thing happened with three models that picked coins at launch: +4 to +10% in research, and all three failed the holdout week.
 
-If you test 4,752 things that do nothing, the best of them will show a t-stat of about 3.6 just by luck (`audit.stats.median_best_t`). To trust the winner it would need about 4.25 (`sidak_t`). I didn't know those numbers at the time and I should have.
+If you test 4,752 things that do nothing, the best of them will show a t-stat of about 3.6 just by luck (`audit.stats.median_best_t`). To trust the winner it would need about 4.25 (`sidak_t`). I didn't know those numbers at the time and I should have. It's the same argument Harvey, Liu and Zhu (2016) make for asking new return factors to clear a t of about 3.
 
 Now the rule and the pass mark get written down before the test, and if a number came out of a search I write the size of the search next to it.
 
